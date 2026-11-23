@@ -38,8 +38,8 @@ input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid v
 .hunts a{display:inline-flex;align-items:center;min-height:36px;padding:0 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:12px;font-weight:700;background:#132427}
 .hunts a.sold{border-color:rgba(250,204,21,.4);color:#fde68a}
 .save{position:absolute;right:10px;bottom:10px}
-nav{position:fixed;left:8px;right:8px;bottom:8px;display:flex;background:rgba(8,14,15,.94);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-nav button{flex:1;min-height:60px;background:none;border:0;color:#7d9592;font:700 11px system-ui;cursor:pointer}
+nav{position:fixed;left:8px;right:8px;bottom:8px;display:flex;overflow-x:auto;scrollbar-width:none;background:rgba(8,14,15,.94);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+nav::-webkit-scrollbar{display:none}nav button{flex:1 0 70px;min-height:60px;background:none;border:0;color:#7d9592;font:700 11px system-ui;cursor:pointer}
 nav button span{display:block;font-size:19px}
 nav button.on{color:#fff;background:linear-gradient(180deg,rgba(94,234,212,.2),rgba(192,132,252,.15))}
 .spin{display:inline-block;width:14px;height:14px;border:3px solid #24393d;border-top-color:var(--gem);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes s{to{transform:rotate(360deg)}}
@@ -48,6 +48,7 @@ nav button.on{color:#fff;background:linear-gradient(180deg,rgba(94,234,212,.2),r
 table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px dashed var(--line);padding:7px 4px;text-align:left;vertical-align:top}
 .big{font:800 26px ui-monospace,monospace;color:var(--cit)}
 .x{background:none;border:0;color:var(--ruby);font-size:18px;min-width:44px;min-height:44px;cursor:pointer}
+.mono{font:12px ui-monospace,monospace}.ok{color:var(--gem)}.bad{color:var(--ruby)}
 .seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{min-height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink2);padding:0 12px;font:700 12px system-ui;cursor:pointer}.seg button.on{background:rgba(94,234,212,.15);color:var(--gem);border-color:rgba(94,234,212,.4)}
 </style></head><body>
 <div class="banner" id="banner" hidden>Preview mode: live scans may be blocked here. Everything works once it's on GitHub Pages.</div>
@@ -56,7 +57,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
 
 <!-- FAME -->
 <section id="t-fame">
- <div class="card"><h2>📈 Fame Radar</h2>
+ <div class="card"><h2>📈 Fame Radar <span class="muted">· Before Fame</span></h2>
   <p class="muted">People whose Wikipedia traffic just exploded (a breakout, a viral moment, a call-up, a casting) but whose early stuff hasn't been repriced yet: yearbooks from their school, first records, college programs, rookie cards, early signed items.</p>
   <div class="how"><b>The play:</b> open "Cheapest now" and compare with "Sold". If listings are priced below recent sales, or nobody has listed the early items yet, buy before collectors catch on.</div>
   <label for="fDays">Compare yesterday with…</label>
@@ -87,7 +88,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
 
 <!-- REFUNDS -->
 <section id="t-ref" hidden>
- <div class="card"><h2>💸 Refund Gap</h2>
+ <div class="card"><h2>💸 Refund Gap <span class="muted">· Recall Arbitrage</span></h2>
   <p class="muted">New U.S. product recalls (CPSC) where the maker refunds owners. When used units sell for less than the refund, the gap is the profit.</p>
   <div class="how"><b>Rules:</b> read the remedy first, because some refunds need a receipt or are limited to original buyers. Never resell a recalled item; claim the refund and dispose of it as instructed. Only count it as a lead if the refund terms allow it.</div>
   <label for="rDays">Recalls from the last…</label><select id="rDays"><option value="30">30 days</option><option value="90" selected>90 days</option><option value="180">6 months</option></select>
@@ -102,6 +103,58 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
   <div class="how"><b>The play:</b> open the resolution source and check it yourself. If the answer is already official, buying the winning side at 90–97¢ pays the gap when it settles. <b>Not risk-free:</b> rules can have fine print, results can be disputed, and settlement can take days. Read the rules every time and size small. (Kalshi blocks outside apps, so check Kalshi by hand.)</div>
   <div class="row"><button class="btn" id="resGo">Scan markets</button></div></div>
  <div id="resOut"></div>
+</section>
+
+<!-- FIRST PRESSING -->
+<section id="t-press" hidden>
+ <div class="card"><h2>💿 First Pressing Finder</h2>
+  <p class="muted">Look up any album. See every pressing in order, the first pressing's matrix/runout codes, and the price gap between originals and reissues. Then use the codes to spot first pressings that sellers listed as cheap reissues.</p>
+  <div class="how"><b>The play:</b> at thrift stores and on listings, read the letters etched in the run-out groove (the smooth part near the label) and paste them in "Check a record". If they match the first pressing, you've got the valuable one.</div>
+  <label for="prQ">Artist + album</label><input id="prQ" placeholder="e.g. Fleetwood Mac Rumours">
+  <div class="row"><button class="btn" id="prGo">Find pressings</button></div></div>
+ <div id="prPick"></div><div id="prOut"></div>
+</section>
+
+<!-- ROYALTY -->
+<section id="t-roy" hidden>
+ <div class="card"><h2>🎤 Royalty Hunter</h2>
+  <p class="muted">Finds musicians from your state who've released music but show no songwriter ID (IPI) or ISNI in MusicBrainz. That often means they never registered with a PRO, SoundExchange or The MLC, so royalties may be piling up unclaimed.</p>
+  <div class="how"><b>The play:</b> check them on the SoundExchange and MLC searches. If money is waiting, offer a flat-fee "I'll get you registered and paid" service. Be upfront that registering is free and they can do it themselves; you're selling the legwork.</div>
+  <div class="grid"><div><label for="ryArea">State / area</label><input id="ryArea" value="Connecticut"></div><div><label for="ryFrom">Active since</label><input id="ryFrom" inputmode="numeric" value="2005"></div></div>
+  <div class="row"><button class="btn" id="ryGo">Scan musicians</button></div></div>
+ <div id="ryOut"></div>
+</section>
+
+<!-- DOMAINS -->
+<section id="t-dom" hidden>
+ <div class="card"><h2>🌐 Expired Domains · Backlink Graveyard</h2>
+  <p class="muted">Wikipedia articles cite thousands of websites. When those sites die, their domains often go unregistered, but the Wikipedia links (and others around the web) still point at them. That's built-in authority and traffic that SEO buyers pay for.</p>
+  <div class="how"><b>The play:</b> register "AVAILABLE" domains for about $10 and resell them on Sedo, Afternic or SEO marketplaces, or build a site on them. <b>Never</b> pose as the old organization or reuse its brand.</div>
+  <label for="dmQ">Wikipedia topic (an article title)</label><input id="dmQ" placeholder="e.g. Connecticut, Skateboarding, Indie rock">
+  <label class="muted" style="display:flex;gap:8px;align-items:center;min-height:44px"><input type="checkbox" id="dmDeep" checked style="width:22px;min-height:22px"> Also scan up to 25 articles it links to</label>
+  <div class="row"><button class="btn" id="dmGo">Dig for dead domains</button></div></div>
+ <div id="dmOut"></div>
+</section>
+
+<!-- LAB -->
+<section id="t-lab" hidden>
+ <div class="card"><h2>🔬 Lab Salvage</h2>
+  <p class="muted">Universities, hospitals and government labs dump working equipment for pennies. The same gear resells to labs, schools and hobbyists for hundreds to thousands. These sites can't be scanned automatically, so these are one-tap searches.</p>
+  <div class="how"><b>The play:</b> check the surplus searches weekly. Before bidding, tap the model's "sold" link to confirm resale value. Brand plus exact model number is everything.</div>
+  <h3>Where to find surplus</h3><div id="labWhere"></div>
+  <h3>Equipment price checks</h3><p class="muted">Add model numbers you spot; each gets one-tap sold/active links.</p>
+  <div class="row"><input id="labAdd" placeholder="e.g. Eppendorf 5424 centrifuge" style="flex:1"><button class="btn" id="labAddGo">Add</button></div>
+  <div id="labList"></div></div>
+</section>
+
+<!-- ESCHEAT -->
+<section id="t-esc" hidden>
+ <div class="card"><h2>🏦 Escheat Auctions</h2>
+  <p class="muted">When safe-deposit boxes go unclaimed, states take the contents and periodically auction off the coins, stamps, jewelry, watches and stock certificates, often in vague lots that few bidders understand.</p>
+  <div class="how"><b>The play:</b> find your target state's next auction, browse the lots for coins, stamps and certificates, and price them before bidding. Old certificates? Run them through Paper Value.</div>
+  <label for="escState">State</label><select id="escState"></select>
+  <div id="escLinks"></div>
+  <h3>Lot hunting across auction sites</h3><div id="escAll"></div></div>
 </section>
 
 <!-- LEADS -->
@@ -121,6 +174,11 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
  <button data-t="pros"><span>⚾</span>Prospects</button>
  <button data-t="ref"><span>💸</span>Refunds</button>
  <button data-t="res"><span>🎯</span>Resolve</button>
+ <button data-t="press"><span>💿</span>Pressing</button>
+ <button data-t="roy"><span>🎤</span>Royalty</button>
+ <button data-t="dom"><span>🌐</span>Domains</button>
+ <button data-t="lab"><span>🔬</span>Lab</button>
+ <button data-t="esc"><span>🏦</span>Escheat</button>
  <button data-t="leads"><span>💎</span>Leads</button>
 </nav>
 
@@ -136,7 +194,7 @@ const enc=encodeURIComponent;
 async function pool(items,n,fn){const res=[];let i=0;await Promise.all(Array.from({length:n},async()=>{while(i<items.length){const j=i++;try{res[j]=await fn(items[j])}catch(e){res[j]=null}}}));return res}
 
 /* ---------- tabs ---------- */
-const TABS=['fame','screen','pros','ref','res','leads'];
+const TABS=['fame','screen','pros','ref','res','press','roy','dom','lab','esc','leads'];
 function tab(t){document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!=='t-'+t);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));if(t==='leads')renderLeads();try{history.replaceState(null,'','#'+t)}catch(e){}window.scrollTo(0,0)}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
 
@@ -333,6 +391,131 @@ $('#resGo').onclick=async()=>{const out=$('#resOut');out.innerHTML=spin('Reading
     body:`<details style="margin-top:8px"><summary class="muted" style="cursor:pointer;min-height:32px">Rules (read before buying)</summary><p class="muted" style="white-space:pre-wrap">${esc(desc.slice(0,1800))}</p></details>`,
     hunts:H})}).join('');
  }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
+
+/* ---------- FIRST PRESSING ---------- */
+const DG='https://api.discogs.com';
+const norm=t=>String(t||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+$('#prGo').onclick=async()=>{const q=$('#prQ').value.trim();if(!q)return;$('#prOut').innerHTML='';$('#prPick').innerHTML=spin('Searching Discogs…');
+ try{const d=await JR(`${DG}/database/search?type=master&per_page=8&q=${enc(q)}`);const r=d.results||[];
+  if(!r.length){$('#prPick').innerHTML='<div class="card">No album found. Try artist + album title.</div>';return}
+  $('#prPick').innerHTML='<div class="card"><h3>Which one?</h3>'+r.map(x=>`<button class="btn alt" style="width:100%;text-align:left;margin:4px 0;display:flex;gap:10px;align-items:center" data-m="${x.id}"><img src="${esc(x.thumb)}" style="width:44px;height:44px;border-radius:6px;object-fit:cover" alt="">${esc(x.title)} (${esc(x.year||'?')})</button>`).join('')+'</div>';
+  document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>pressings(b.dataset.m));
+ }catch(e){$('#prPick').innerHTML=`<div class="card">Discogs search failed (${esc(e.message)}). Wait a minute; Discogs allows about 25 lookups per minute.</div>`}};
+let PRESS=[];
+async function pressings(mid){$('#prPick').innerHTML='';const out=$('#prOut');out.innerHTML=spin('Loading every pressing…');
+ try{const m=await JR(`${DG}/masters/${mid}`);const v=await JR(`${DG}/masters/${mid}/versions?per_page=100&sort=released&sort_order=asc`);
+  let vs=(v.versions||[]).filter(x=>(x.major_formats||[]).includes('Vinyl')&&/^\d{4}/.test(x.released||''));
+  if(!vs.length){out.innerHTML='<div class="card">No dated vinyl pressings found for this album.</div>';return}
+  const firstYear=+vs[0].released.slice(0,4);
+  const early=vs.filter(x=>+x.released.slice(0,4)<=firstYear+1).slice(0,6);
+  let late=vs.filter(x=>+x.released.slice(0,4)>=firstYear+10).slice(-3);
+  if(late.length<3){try{const v2=await JR(`${DG}/masters/${mid}/versions?per_page=60&sort=released&sort_order=desc`);late=(v2.versions||[]).filter(x=>(x.major_formats||[]).includes('Vinyl')&&+String(x.released||'').slice(0,4)>=firstYear+10).slice(0,3)}catch(e){}}
+  const pick=[...early,...late];PRESS=[];let n=0;
+  for(const x of pick){out.innerHTML=spin(`Reading pressing details ${++n}/${pick.length}…`);
+   try{const r=await JR(`${DG}/releases/${x.id}`);PRESS.push({v:x,r,first:+x.released.slice(0,4)<=firstYear+1,mx:(r.identifiers||[]).filter(i=>/matrix|runout/i.test(i.type)).map(i=>i.value+(i.description?` (${i.description})`:'')),raw:(r.identifiers||[]).filter(i=>/matrix|runout/i.test(i.type)).map(i=>i.value)})}catch(e){}}
+  const firsts=PRESS.filter(p=>p.first&&p.r.lowest_price),reis=PRESS.filter(p=>!p.first&&p.r.lowest_price);
+  const fLow=firsts.length?Math.min(...firsts.map(p=>p.r.lowest_price)):0,rLow=reis.length?Math.min(...reis.map(p=>p.r.lowest_price)):0;
+  const artist=(m.artists||[]).map(a=>a.name.replace(/\s*\(\d+\)$/,'')).join(' ');const title=m.title;
+  const gap=fLow&&rLow?fLow-rLow:0;
+  const head=leadCard({key:'press:'+mid,mod:'Pressing',title:`${artist} — ${title}`,img:m.images?.[0]?.uri150||'',sub:`First released ${firstYear} · ${(v.pagination?.items||vs.length).toLocaleString()} versions on Discogs`,
+   score:gap>0?Math.max(5,Math.min(99,Math.round(gap))):null,scoreLbl:'$ GAP',
+   tags:`${fLow?`<span class="tag c">1st press from $${fLow.toFixed(0)}</span>`:''}${rLow?`<span class="tag">reissues from $${rLow.toFixed(0)}</span>`:''}`,
+   body:`<p class="muted">Score = dollars between the cheapest first pressing and the cheapest reissue. Bigger gap = a mislabeled original is worth more.</p>`,
+   hunts:[{t:'eBay: listed as reissue',u:ebayNow(`${artist} ${title} vinyl reissue`)},{t:'eBay: newly listed',u:ebayNew(`${artist} ${title} vinyl`)},{t:'eBay: original sold',u:ebaySold(`${artist} ${title} original first press vinyl`),sold:1},{t:'Discogs marketplace',u:`https://www.discogs.com/sell/list?master_id=${mid}&format=Vinyl`}]});
+  out.innerHTML=head+`<div class="card"><h3>Check a record</h3><p class="muted">Type the letters/numbers etched in the run-out groove (any part works):</p><div class="row"><input id="prRun" placeholder="e.g. BSK-3010-A" style="flex:1"><button class="btn" id="prRunGo">Match</button></div><div id="prRunOut"></div></div>
+   <div class="card"><h3>Pressings (first ones on top)</h3>${PRESS.map(p=>`<div class="lead"><div class="top"><div class="nm"><b>${esc(p.v.released)} · ${esc(p.v.country||'')} · ${esc(p.v.label||'')} ${esc(p.v.catno||'')}</b>
+    <div>${p.first?'<span class="tag c">FIRST-ERA PRESSING</span>':'<span class="tag">later reissue</span>'}<span class="tag a">${p.r.num_for_sale||0} for sale</span>${p.r.lowest_price?`<span class="tag">from $${p.r.lowest_price.toFixed(2)}</span>`:''}</div>
+    <div class="mono muted" style="margin-top:6px">${p.mx.length?p.mx.map(esc).join('<br>'):'no matrix codes listed'}</div></div></div>
+    ${hunts([{t:'Discogs page',u:p.r.uri},{t:'eBay by cat #',u:ebayNow(`${artist} ${p.v.catno||''}`)}])}</div>`).join('')}</div>`;
+  $('#prRunGo').onclick=()=>{const t=norm($('#prRun').value);if(t.length<3)return;
+   const hits=PRESS.map(p=>{let best=0;for(const m of p.raw){const nm=norm(m);if(nm.includes(t)||t.includes(nm))best=Math.max(best,Math.min(nm.length,t.length));else{let k=0;for(let L=Math.min(t.length,nm.length);L>=4;L--){for(let i=0;i+L<=t.length;i++)if(nm.includes(t.slice(i,i+L))){k=L;break}if(k)break}best=Math.max(best,k)}}return{p,best}}).filter(h=>h.best>=4).sort((a,b)=>b.best-a.best);
+   $('#prRunOut').innerHTML=hits.length?hits.slice(0,3).map(h=>`<div class="how">${h.p.first?'💎 <b>Matches a FIRST-ERA pressing</b>':'Matches a later reissue'}: ${esc(h.p.v.released)} ${esc(h.p.v.country||'')} ${esc(h.p.v.label||'')}${h.p.r.lowest_price?` · cheapest copy $${h.p.r.lowest_price.toFixed(2)}`:''}</div>`).join(''):'<p class="muted">No match among the loaded pressings. Check the Discogs master page for all versions.</p>'};
+ }catch(e){out.innerHTML=`<div class="card">Couldn't load pressings (${esc(e.message)}). Discogs allows about 25 lookups a minute; wait a moment and retry.</div>`}}
+
+/* ---------- ROYALTY HUNTER ---------- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function JR(u,tries=4){for(let i=0;i<tries;i++){const r=await fetch(u);if(r.ok)return r.json();if(r.status!==503&&r.status!==429)throw new Error('HTTP '+r.status);await sleep(1500*(i+1))}throw new Error('busy, try again in a minute')}
+$('#ryGo').onclick=async()=>{const out=$('#ryOut');const area=$('#ryArea').value.trim()||'Connecticut',from=+$('#ryFrom').value||2005;
+ out.innerHTML=spin('Finding musicians…');
+ try{const q=`(area:"${area}" OR beginarea:"${area}") AND begin:[${from} TO ${new Date().getFullYear()}]`;
+  const d=await JR(`https://musicbrainz.org/ws/2/artist?fmt=json&limit=100&query=${enc(q)}`);
+  const cands=(d.artists||[]).filter(a=>!(a.ipis||[]).length&&!(a.isnis||[]).length&&!a['life-span']?.ended).slice(0,35);
+  const rows=[];let n=0;
+  for(const a of cands){out.innerHTML=spin(`Checking releases ${++n}/${cands.length} (MusicBrainz allows 1 per second)…`);
+   try{const x=await JR(`https://musicbrainz.org/ws/2/artist/${a.id}?fmt=json&inc=release-groups+url-rels`);
+    const rg=(x['release-groups']||[]);if(!rg.length){await sleep(1050);continue}
+    const latest=rg.map(g=>g['first-release-date']||'').sort().pop()||'';
+    const links=(x.relations||[]).filter(r=>r.url).map(r=>({t:r.type,u:r.url.resource}));
+    rows.push({a,rg,latest,links})}catch(e){}
+   await sleep(1050)}
+  rows.forEach(r=>{const recent=+r.latest.slice(0,4)||0;r.score=Math.max(5,Math.min(99,Math.round(r.rg.length*6+(recent>=new Date().getFullYear()-3?30:recent>=2015?15:0)+(r.links.some(l=>/spotify|bandcamp|youtube|soundcloud|apple/i.test(l.u))?15:0))))});
+  rows.sort((a,b)=>b.score-a.score);
+  if(!rows.length){out.innerHTML='<div class="card">No unregistered-looking musicians with releases found. Try an earlier year or a bigger area.</div>';return}
+  out.innerHTML=`<div class="card muted">${rows.length} ${esc(area)} acts with releases but no IPI/ISNI on file. Score favors more releases, recent activity, and streaming presence (= plays = royalties).</div>`+rows.map(r=>{const a=r.a;
+   const soc=r.links.filter(l=>/instagram|facebook|twitter|x\.com|bandcamp|official|homepage|youtube|tiktok/i.test(l.u+l.t)).slice(0,4).map(l=>({t:l.t||'link',u:l.u}));
+   return leadCard({key:'roy:'+a.id,mod:'Royalty',title:a.name,sub:`${esc(a.type||'Artist')} · ${esc(a.area?.name||'')}${a['life-span']?.begin?' · since '+esc(a['life-span'].begin.slice(0,4)):''}<br>${r.rg.length} releases · latest ${esc(r.latest||'?')}`,
+    score:r.score,scoreLbl:'LEAD',tags:'<span class="tag r">no IPI / ISNI</span>'+(r.links.some(l=>/spotify|apple/i.test(l.u))?'<span class="tag c">on streaming</span>':''),
+    hunts:[{t:'SoundExchange check',u:`https://www.google.com/search?q=${enc('site:soundexchange.com '+a.name)}`},{t:'MLC public search',u:'https://portal.themlc.com/search'},{t:'Spotify',u:`https://open.spotify.com/search/${enc(a.name)}`},...soc,{t:'MusicBrainz',u:`https://musicbrainz.org/artist/${a.id}`}]})}).join('');
+ }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
+
+/* ---------- EXPIRED DOMAINS ---------- */
+const BIGD=/(wikipedia|wikimedia|wikidata|archive\.org|doi\.org|google|youtube|facebook|twitter|x\.com|instagram|amazon|nytimes|bbc|cnn|jstor|worldcat|imdb|linkedin|apple|microsoft|github|reddit|yahoo|washingtonpost|theguardian|reuters|apnews|nih\.gov|census\.gov|\.gov$|\.mil$|\.edu$|books\.google|isni|viaf|loc\.gov|ghostarchive|webcitation|archive\.today|archive\.ph)/i;
+const SLD2=/\.(co|com|org|net|ac|gov|edu)\.[a-z]{2}$/i;
+function regDomain(h){h=h.toLowerCase().replace(/^www\d?\./,'');const p=h.split('.');if(p.length<2)return'';return SLD2.test(h)?p.slice(-3).join('.'):p.slice(-2).join('.')}
+let RDAPB=null;
+async function rdapBase(tld){if(!RDAPB){const d=await J('https://data.iana.org/rdap/dns.json');RDAPB={};for(const[tl,urls]of d.services)for(const t of tl)RDAPB[t]=urls[0]}return RDAPB[tld]}
+$('#dmGo').onclick=async()=>{const t=$('#dmQ').value.trim();if(!t)return;const out=$('#dmOut');out.innerHTML=spin('Collecting cited websites…');
+ try{const base='https://en.wikipedia.org/w/api.php?format=json&origin=*&redirects=1&action=query&prop=extlinks&ellimit=max';
+  const counts={},from={};const add=(pages)=>{for(const p of Object.values(pages||{}))for(const l of p.extlinks||[]){let u=l['*']||l.url||'';if(u.startsWith('//'))u='https:'+u;try{const h=new URL(u).hostname;const dmn=regDomain(h);if(!dmn||BIGD.test(dmn))continue;counts[dmn]=(counts[dmn]||0)+1;(from[dmn]=from[dmn]||new Set()).add(p.title)}catch(e){}}};
+  const d1=await JR(base+'&titles='+enc(t));add(d1.query?.pages);
+  if($('#dmDeep').checked){try{const d2=await J(base+'&generator=links&gplnamespace=0&gpllimit=25&titles='+enc(t));add(d2.query?.pages)}catch(e){}}
+  const doms=Object.keys(counts).slice(0,250);if(!doms.length){out.innerHTML='<div class="card">No outside links found. Check the article title spelling.</div>';return}
+  const dead=[];let n=0;
+  await pool(doms,8,async dm=>{const r=await J(`https://dns.google/resolve?name=${enc(dm)}&type=NS`);n++;if(n%20===0)out.innerHTML=spin(`Testing ${n}/${doms.length} domains…`);if(r.Status===3)dead.push(dm)});
+  out.innerHTML=spin(`${dead.length} dead domains, checking which are registrable…`);
+  const res=[];
+  await pool(dead,4,async dm=>{const tld=dm.split('.').pop();const b=await rdapBase(tld);if(!b){res.push({dm,st:'unknown'});return}
+   const r=await fetch(b.replace(/\/?$/,'/')+'domain/'+dm);if(r.status===404){res.push({dm,st:'available'});return}
+   if(r.ok){const j=await r.json();const exp=(j.events||[]).find(e=>e.eventAction==='expiration')?.eventDate||'';res.push({dm,st:'registered',exp,status:(j.status||[]).join(', ')});return}
+   res.push({dm,st:'unknown'})});
+  res.forEach(r=>{const c=counts[r.dm];r.score=Math.max(5,Math.min(99,(r.st==='available'?50:r.st==='registered'&&/pending ?delete|redemption/i.test(r.status||'')?35:10)+c*6+(/\.(com|org|net)$/.test(r.dm)?10:0)+(from[r.dm].size>1?10:0)))});
+  res.sort((a,b)=>b.score-a.score);
+  out.innerHTML=`<div class="card muted">Scanned ${doms.length} cited domains → ${dead.length} no longer resolve → <b class="ok">${res.filter(r=>r.st==='available').length} available to register</b>.</div>`+(res.length?res.map(r=>leadCard({key:'dom:'+r.dm,mod:'Domain',title:r.dm,
+   sub:`Cited ${counts[r.dm]}× on: ${esc([...from[r.dm]].slice(0,3).join(', '))}${from[r.dm].size>3?' …':''}${r.exp?`<br>Registration expires ${esc(r.exp.slice(0,10))}`:''}`,
+   score:r.score,scoreLbl:r.st==='available'?'OPEN':r.st==='registered'?'TAKEN':'?',
+   tags:r.st==='available'?'<span class="tag c">AVAILABLE</span>':r.st==='registered'?`<span class="tag r">registered, but dead</span>${/pending ?delete|redemption/i.test(r.status||'')?'<span class="tag a">dropping soon</span>':''}`:'<span class="tag">status unknown</span>',
+   hunts:[{t:'Register / price',u:`https://www.namecheap.com/domains/registration/results/?domain=${enc(r.dm)}`},{t:'What it was (Wayback)',u:`https://web.archive.org/web/2015*/${r.dm}`},{t:'Backlinks',u:`https://ahrefs.com/backlink-checker?input=${enc(r.dm)}&mode=subdomains`},{t:'Comparable sales',u:`https://namebio.com/?s=${enc(r.dm.split('.')[0])}`,sold:1}]})).join(''):'<div class="card">Every cited site still resolves. Try a different or broader topic.</div>');
+ }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
+
+/* ---------- LAB SALVAGE ---------- */
+const G=q=>`https://www.google.com/search?q=${enc(q)}`;
+$('#labWhere').innerHTML=hunts([
+ {t:'New England university surplus',u:G('university surplus property sale lab equipment (Connecticut OR Massachusetts OR "Rhode Island")')},
+ {t:'UConn surplus',u:G('UConn surplus property sale')},{t:'Yale surplus',u:G('Yale surplus equipment sale')},
+ {t:'GovDeals: lab equipment',u:'https://www.govdeals.com/en/search?kWord=laboratory%20equipment'},
+ {t:'GovDeals: microscope',u:'https://www.govdeals.com/en/search?kWord=microscope'},
+ {t:'GSA Auctions: lab',u:'https://gsaauctions.gov/auctions/auctions-list?searchType=KEYWORD&searchKeyword=laboratory'},
+ {t:'Hospital surplus auctions',u:G('hospital surplus auction medical lab equipment Connecticut')},
+ {t:'HiBid: lab equipment',u:'https://hibid.com/lots?q=laboratory%20equipment'},
+ {t:'eBay: lab lots, auction ending',u:'https://www.ebay.com/sch/i.html?_nkw=lab+equipment+lot&LH_Auction=1&_sop=1'}]);
+const LABDEF=['Eppendorf 5424 centrifuge','Bio-Rad T100 thermal cycler','Bio-Rad CFX96','Thermo NanoDrop','Olympus BX microscope','Nikon Eclipse microscope','Leica DM microscope','Agilent 1260 HPLC','Mettler Toledo analytical balance','Branson sonifier','Thermo Heracell incubator','Zeiss Axio microscope'];
+function renderLab(){const L=store.get('rc.lab',LABDEF);$('#labList').innerHTML=L.map((m,i)=>`<div class="lead"><div class="top"><div class="nm"><b>${esc(m)}</b></div><button class="x" data-ld="${i}">×</button></div>${hunts(pair('eBay',m))}</div>`).join('');
+ document.querySelectorAll('[data-ld]').forEach(b=>b.onclick=()=>{const L=store.get('rc.lab',LABDEF);L.splice(+b.dataset.ld,1);store.set('rc.lab',L);renderLab()})}
+$('#labAddGo').onclick=()=>{const v=$('#labAdd').value.trim();if(!v)return;const L=store.get('rc.lab',LABDEF);L.unshift(v);store.set('rc.lab',L);$('#labAdd').value='';renderLab()};
+renderLab();
+
+/* ---------- ESCHEAT ---------- */
+const STATES='Alabama,Alaska,Arizona,Arkansas,California,Colorado,Connecticut,Delaware,Florida,Georgia,Hawaii,Idaho,Illinois,Indiana,Iowa,Kansas,Kentucky,Louisiana,Maine,Maryland,Massachusetts,Michigan,Minnesota,Mississippi,Missouri,Montana,Nebraska,Nevada,New Hampshire,New Jersey,New Mexico,New York,North Carolina,North Dakota,Ohio,Oklahoma,Oregon,Pennsylvania,Rhode Island,South Carolina,South Dakota,Tennessee,Texas,Utah,Vermont,Virginia,Washington,West Virginia,Wisconsin,Wyoming'.split(',');
+$('#escState').innerHTML=STATES.map(s=>`<option${s==='Connecticut'?' selected':''}>${s}</option>`).join('');
+function renderEsc(){const st=$('#escState').value;
+ $('#escLinks').innerHTML=hunts([{t:`${st}: auction page`,u:G(`${st} treasurer unclaimed property auction safe deposit box`)},{t:`${st}: next auction date`,u:G(`${st} unclaimed property auction ${new Date().getFullYear()}`)+'&tbs=qdr:y'},{t:`${st}: auction house used`,u:G(`"${st}" "unclaimed property" auction coins stamps jewelry lots`)}]);
+}
+$('#escState').onchange=renderEsc;renderEsc();
+$('#escAll').innerHTML=hunts([
+ {t:'HiBid: unclaimed property',u:'https://hibid.com/lots?q=unclaimed%20property'},{t:'HiBid: safe deposit',u:'https://hibid.com/lots?q=safe%20deposit%20box'},
+ {t:'LiveAuctioneers: unclaimed',u:'https://www.liveauctioneers.com/search/?keyword=unclaimed%20property'},
+ {t:'eBay: safe deposit box contents',u:ebayNow('safe deposit box contents')},{t:'eBay sold: safe deposit',u:ebaySold('safe deposit box contents'),sold:1},
+ {t:'Old stock certificates sold',u:ebaySold('uncancelled stock certificate'),sold:1}]);
 
 /* ---------- LEADS ---------- */
 let lf='all';
