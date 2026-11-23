@@ -95,6 +95,15 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
  <div id="rOut"></div>
 </section>
 
+<!-- RESOLUTION WATCH -->
+<section id="t-res" hidden>
+ <div class="card"><h2>🎯 Resolution Watch</h2>
+  <p class="muted">Polymarket markets where the answer may already be known: the deadline has passed or the outcome has been proposed, but the price hasn't hit 100% yet. Plus markets in their final 48 hours with a strong favorite.</p>
+  <div class="how"><b>The play:</b> open the resolution source and check it yourself. If the answer is already official, buying the winning side at 90–97¢ pays the gap when it settles. <b>Not risk-free:</b> rules can have fine print, results can be disputed, and settlement can take days. Read the rules every time and size small. (Kalshi blocks outside apps, so check Kalshi by hand.)</div>
+  <div class="row"><button class="btn" id="resGo">Scan markets</button></div></div>
+ <div id="resOut"></div>
+</section>
+
 <!-- LEADS -->
 <section id="t-leads" hidden>
  <div class="card"><h2>💎 My Leads</h2>
@@ -111,6 +120,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
  <button data-t="screen"><span>🎬</span>Screen</button>
  <button data-t="pros"><span>⚾</span>Prospects</button>
  <button data-t="ref"><span>💸</span>Refunds</button>
+ <button data-t="res"><span>🎯</span>Resolve</button>
  <button data-t="leads"><span>💎</span>Leads</button>
 </nav>
 
@@ -126,7 +136,7 @@ const enc=encodeURIComponent;
 async function pool(items,n,fn){const res=[];let i=0;await Promise.all(Array.from({length:n},async()=>{while(i<items.length){const j=i++;try{res[j]=await fn(items[j])}catch(e){res[j]=null}}}));return res}
 
 /* ---------- tabs ---------- */
-const TABS=['fame','screen','pros','ref','leads'];
+const TABS=['fame','screen','pros','ref','res','leads'];
 function tab(t){document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!=='t-'+t);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));if(t==='leads')renderLeads();try{history.replaceState(null,'','#'+t)}catch(e){}window.scrollTo(0,0)}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
 
@@ -286,6 +296,42 @@ $('#rGo').onclick=async()=>{const out=$('#rOut');out.innerHTML=spin('Reading CPS
     tags:`${x.full?'<span class="tag c">full refund</span>':''}${x.needsReceipt?'<span class="tag r">needs receipt</span>':'<span class="tag">no receipt mentioned</span>'}${x.prorated?'<span class="tag r">prorated</span>':''}`,
     body:`<details style="margin-top:8px"><summary class="muted" style="cursor:pointer;min-height:32px">Remedy terms & where it was sold</summary><p class="muted">${esc(x.rem)}</p><p class="muted">${esc(x.sold)}</p></details>`,
     hunts:[{t:'Used on eBay',u:ebayNow(name)},{t:'FB Marketplace',u:`https://www.facebook.com/marketplace/search/?query=${enc(name)}`},{t:'Craigslist (CT)',u:`https://hartford.craigslist.org/search/sss?query=${enc(name)}`},{t:'Recall notice',u:r.URL}]})}).join('');
+ }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
+
+/* ---------- RESOLUTION WATCH ---------- */
+const PJ=s=>{try{return typeof s==='string'?JSON.parse(s):s||[]}catch(e){return[]}};
+$('#resGo').onclick=async()=>{const out=$('#resOut');out.innerHTML=spin('Reading Polymarket…');
+ const now=new Date(),iso=d=>d.toISOString();
+ const G='https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=500';
+ try{const[past,soon]=await Promise.all([
+   J(`${G}&end_date_min=${iso(new Date(now-30*864e5))}&end_date_max=${iso(now)}`),
+   J(`${G}&end_date_min=${iso(now)}&end_date_max=${iso(new Date(+now+48*36e5))}`)]);
+  const seen=new Set();const rows=[];
+  for(const[m,kind]of[...past.map(m=>[m,'past']),...soon.map(m=>[m,'soon'])]){
+   if(seen.has(m.id))continue;seen.add(m.id);
+   const outs=PJ(m.outcomes),pr=PJ(m.outcomePrices).map(Number);if(outs.length<2||pr.length!==outs.length)continue;
+   const i=pr.indexOf(Math.max(...pr)),p=pr[i];const liq=+m.liquidityNum||0;
+   const proposed=/propos/i.test(m.umaResolutionStatus||'');
+   if(p<0.80||p>0.985||liq<(kind==='past'?300:1000))continue;
+   const ask=outs.length===2?(i===0?+m.bestAsk:1-(+m.bestBid)):p;const buy=ask>0&&ask<1?ask:p;
+   const ret=(1-buy)/buy*100;if(ret<1)continue;
+   const end=new Date(m.endDate);const hrs=(end-now)/36e5;
+   let score=Math.round(ret*4+(kind==='past'?25:0)+(proposed?25:0)+Math.min(15,Math.log10(liq+1)*3));score=Math.max(3,Math.min(99,score));
+   rows.push({m,kind,outs,i,p,buy,ret,liq,hrs,proposed,score})}
+  rows.sort((a,b)=>b.score-a.score);
+  if(!rows.length){out.innerHTML='<div class="card">Nothing fits right now. Check again later; these show up around news events and deadlines.</div>';return}
+  out.innerHTML=`<div class="card muted">${rows.length} markets. Score blends the return left on the table, whether the deadline has passed or an outcome has been proposed, and liquidity.</div>`+rows.slice(0,60).map(x=>{
+   const m=x.m,ev=(m.events||[])[0]||{};const desc=m.description||ev.description||'';
+   const src=m.resolutionSource||ev.resolutionSource||((desc.match(/https?:\/\/[^\s)"']+/)||[''])[0]);
+   const when=x.hrs<0?`deadline passed ${Math.round(-x.hrs)}h ago`:`ends in ${x.hrs<1?Math.round(x.hrs*60)+' min':Math.round(x.hrs)+'h'}`;
+   const H=[{t:'Open on Polymarket',u:`https://polymarket.com/event/${ev.slug||m.slug}`}];if(src)H.push({t:'Resolution source',u:src,sold:1});
+   H.push({t:'News search',u:`https://www.google.com/search?q=${enc(m.question)}&tbm=nws`});
+   return leadCard({key:'res:'+m.id,mod:'Resolution',title:m.question,img:m.icon||m.image||'',
+    sub:`Leader: <b>${esc(x.outs[x.i])}</b> at ${(x.buy*100).toFixed(1)}¢ → pays $1 · <b style="color:var(--cit)">+${x.ret.toFixed(1)}%</b> if right`,
+    score:x.score,scoreLbl:'+'+x.ret.toFixed(0)+'%',
+    tags:`<span class="tag ${x.kind==='past'?'r':'c'}">${esc(when)}</span>${x.proposed?'<span class="tag a">outcome proposed</span>':''}<span class="tag">$${Math.round(x.liq).toLocaleString()} liquidity</span>`,
+    body:`<details style="margin-top:8px"><summary class="muted" style="cursor:pointer;min-height:32px">Rules (read before buying)</summary><p class="muted" style="white-space:pre-wrap">${esc(desc.slice(0,1800))}</p></details>`,
+    hunts:H})}).join('');
  }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
 
 /* ---------- LEADS ---------- */
