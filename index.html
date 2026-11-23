@@ -433,6 +433,13 @@ async function pressings(mid){$('#prPick').innerHTML='';const out=$('#prOut');ou
  }catch(e){out.innerHTML=`<div class="card">Couldn't load pressings (${esc(e.message)}). Discogs allows about 25 lookups a minute; wait a moment and retry.</div>`}}
 
 /* ---------- ROYALTY HUNTER ---------- */
+function jsonp(url){return new Promise((res,rej)=>{const cb='dz'+Math.random().toString(36).slice(2);const sc=document.createElement('script');
+ const done=()=>{clearTimeout(t);try{delete window[cb]}catch(e){}sc.remove()};const t=setTimeout(()=>{done();rej(new Error('timeout'))},10000);
+ window[cb]=d=>{done();res(d)};sc.onerror=()=>{done();rej(new Error('load'))};sc.src=url+(url.includes('?')?'&':'?')+'output=jsonp&callback='+cb;document.head.appendChild(sc)})}
+async function popularity(name){try{const d=await jsonp('https://api.deezer.com/search/artist?limit=5&q='+enc(name));
+ const a=(d.data||[]).find(x=>x.name.toLowerCase()===name.toLowerCase());if(!a)return null;
+ const t=await jsonp(`https://api.deezer.com/artist/${a.id}/top?limit=3`);const rank=Math.max(0,...(t.data||[]).map(x=>x.rank||0));
+ return{rank,fans:a.nb_fan,link:a.link}}catch(e){return null}}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function JR(u,tries=4){for(let i=0;i<tries;i++){const r=await fetch(u);if(r.ok)return r.json();if(r.status!==503&&r.status!==429)throw new Error('HTTP '+r.status);await sleep(1500*(i+1))}throw new Error('busy, try again in a minute')}
 $('#ryGo').onclick=async()=>{const out=$('#ryOut');const area=$('#ryArea').value.trim()||'Connecticut',from=+$('#ryFrom').value||2005;
@@ -448,13 +455,16 @@ $('#ryGo').onclick=async()=>{const out=$('#ryOut');const area=$('#ryArea').value
     const links=(x.relations||[]).filter(r=>r.url).map(r=>({t:r.type,u:r.url.resource}));
     rows.push({a,rg,latest,links})}catch(e){}
    await sleep(1050)}
-  rows.forEach(r=>{const recent=+r.latest.slice(0,4)||0;r.score=Math.max(5,Math.min(99,Math.round(r.rg.length*6+(recent>=new Date().getFullYear()-3?30:recent>=2015?15:0)+(r.links.some(l=>/spotify|bandcamp|youtube|soundcloud|apple/i.test(l.u))?15:0))))});
+  n=0;for(const r of rows){out.innerHTML=spin(`Measuring streaming popularity ${++n}/${rows.length}…`);r.pop=await popularity(r.a.name)}
+  rows.forEach(r=>{const recent=+r.latest.slice(0,4)||0;const rk=r.pop?.rank||0;
+   const band=rk>500000?{s:12,t:'big: likely has a label/team',c:''}:rk>150000?{s:85,t:'sweet spot: real plays, likely no team',c:'c'}:rk>50000?{s:70,t:'solid plays',c:'c'}:rk>15000?{s:40,t:'small plays',c:''}:{s:15,t:r.pop?'very few plays':'not on Deezer',c:''};
+   r.band=band;r.score=Math.max(3,Math.min(99,band.s+(recent>=new Date().getFullYear()-2?10:0)+Math.min(5,r.rg.length)))});
   rows.sort((a,b)=>b.score-a.score);
   if(!rows.length){out.innerHTML='<div class="card">No unregistered-looking musicians with releases found. Try an earlier year or a bigger area.</div>';return}
-  out.innerHTML=`<div class="card muted">${rows.length} ${esc(area)} acts with releases but no IPI/ISNI on file. Score favors more releases, recent activity, and streaming presence (= plays = royalties).</div>`+rows.map(r=>{const a=r.a;
+  out.innerHTML=`<div class="card muted">${rows.length} ${esc(area)} acts with releases but no IPI/ISNI on file. Score targets the sweet spot: enough streams to earn real royalties, but small enough that there's likely no label or manager handling registration. Big acts score low because their team almost certainly registered them. Popularity is matched by name, so confirm it's the same act before reaching out.</div>`+rows.map(r=>{const a=r.a;
    const soc=r.links.filter(l=>/instagram|facebook|twitter|x\.com|bandcamp|official|homepage|youtube|tiktok/i.test(l.u+l.t)).slice(0,4).map(l=>({t:l.t||'link',u:l.u}));
    return leadCard({key:'roy:'+a.id,mod:'Royalty',title:a.name,sub:`${esc(a.type||'Artist')} · ${esc(a.area?.name||'')}${a['life-span']?.begin?' · since '+esc(a['life-span'].begin.slice(0,4)):''}<br>${r.rg.length} releases · latest ${esc(r.latest||'?')}`,
-    score:r.score,scoreLbl:'LEAD',tags:'<span class="tag r">no IPI / ISNI</span>'+(r.links.some(l=>/spotify|apple/i.test(l.u))?'<span class="tag c">on streaming</span>':''),
+    score:r.score,scoreLbl:'LEAD',tags:'<span class="tag r">no IPI / ISNI on file</span>'+`<span class="tag ${r.band.c}">${esc(r.band.t)}</span>`+(r.pop?`<span class="tag a">popularity ${Math.round(r.pop.rank/1000)}/1000</span>`:''),
     hunts:[{t:'SoundExchange check',u:`https://www.google.com/search?q=${enc('site:soundexchange.com '+a.name)}`},{t:'MLC public search',u:'https://portal.themlc.com/search'},{t:'Spotify',u:`https://open.spotify.com/search/${enc(a.name)}`},...soc,{t:'MusicBrainz',u:`https://musicbrainz.org/artist/${a.id}`}]})}).join('');
  }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
 
