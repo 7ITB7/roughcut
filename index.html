@@ -38,8 +38,8 @@ input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid v
 .hunts a{display:inline-flex;align-items:center;min-height:36px;padding:0 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:12px;font-weight:700;background:#132427}
 .hunts a.sold{border-color:rgba(250,204,21,.4);color:#fde68a}
 .save{position:absolute;right:10px;bottom:10px}
-nav{position:fixed;left:8px;right:8px;bottom:8px;display:flex;overflow-x:auto;scrollbar-width:none;background:rgba(8,14,15,.94);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-nav::-webkit-scrollbar{display:none}nav button{flex:1 0 70px;min-height:60px;background:none;border:0;color:#7d9592;font:700 11px system-ui;cursor:pointer}
+nav{position:fixed;left:8px;right:8px;bottom:8px;display:flex;overflow-x:auto;scrollbar-width:none;background:rgba(8,14,15,.94);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x}
+nav::-webkit-scrollbar{display:none}nav button{flex:0 0 74px;min-height:60px;background:none;border:0;color:#7d9592;font:700 11px system-ui;cursor:pointer}
 nav button span{display:block;font-size:19px}
 nav button.on{color:#fff;background:linear-gradient(180deg,rgba(94,234,212,.2),rgba(192,132,252,.15))}
 .spin{display:inline-block;width:14px;height:14px;border:3px solid #24393d;border-top-color:var(--gem);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes s{to{transform:rotate(360deg)}}
@@ -195,7 +195,7 @@ async function pool(items,n,fn){const res=[];let i=0;await Promise.all(Array.fro
 
 /* ---------- tabs ---------- */
 const TABS=['fame','screen','pros','ref','res','press','roy','dom','lab','esc','leads'];
-function tab(t){document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!=='t-'+t);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));if(t==='leads')renderLeads();try{history.replaceState(null,'','#'+t)}catch(e){}window.scrollTo(0,0)}
+function tab(t){document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!=='t-'+t);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));try{document.querySelector('nav button.on').scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'})}catch(e){}if(t==='leads')renderLeads();try{history.replaceState(null,'','#'+t)}catch(e){}window.scrollTo(0,0)}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
 
 /* ---------- hunt links ---------- */
