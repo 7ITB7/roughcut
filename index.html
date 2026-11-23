@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1416"><link rel="icon" href="data:,"><title>Rough Cut</title>
+<style>
+/* ROUGH CUT: "prospector's loupe" style. Mine-shaft teal-black, raw-quartz cards, faceted gem accents (aquamarine, citrine, ruby), mono readouts like an assay slip */
+:root{--bg:#0b1416;--card:#122023;--card2:#17292d;--ink:#e6f1ef;--ink2:#8fa9a6;--line:#24393d;--gem:#5eead4;--cit:#facc15;--ruby:#f43f5e;--ame:#c084fc;--sky:#38bdf8}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html{color-scheme:dark}
+body{margin:0;background:radial-gradient(circle at 15% -10%,rgba(94,234,212,.12),transparent 40%),radial-gradient(circle at 110% 40%,rgba(192,132,252,.10),transparent 40%),var(--bg);background-attachment:fixed;color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:86px}
+header{padding:max(14px,env(safe-area-inset-top)) 16px 14px;background:linear-gradient(135deg,#0f2a2c,#123236 50%,#1f1633);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+header h1{margin:0;font:800 24px/1 system-ui;letter-spacing:.06em;text-transform:uppercase}
+header h1 b{background:linear-gradient(90deg,#5eead4,#facc15,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+header small{display:block;color:var(--ink2);font-size:12px;margin-top:4px}
+.gemstat{font:700 12px ui-monospace,monospace;color:var(--cit);text-align:right}
+main{max-width:780px;margin:0 auto;padding:10px}
+.card{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+h2{margin:0 0 6px;font:800 18px system-ui;color:var(--gem)}
+h3{margin:14px 0 6px;font:800 14px system-ui;color:var(--cit);text-transform:uppercase;letter-spacing:.06em}
+.muted{color:var(--ink2);font-size:13px}
+label{display:block;font-size:12px;font-weight:700;color:var(--ink2);margin:10px 0 4px}
+input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#0d191b;color:var(--ink);font:inherit}
+.btn{min-height:44px;border:0;border-radius:10px;padding:0 16px;background:linear-gradient(135deg,#14b8a6,#0e7490);color:#fff;font:800 14px system-ui;cursor:pointer}
+.btn.alt{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.sm{min-height:36px;padding:0 10px;font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.lead{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:#0f1b1d;position:relative}
+.lead .top{display:flex;gap:10px;align-items:flex-start}
+.lead .nm{flex:1;min-width:0}
+.lead b.t{font-size:16px}
+.lead img.th{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:none;background:#0d191b}
+.score{flex:none;min-width:54px;text-align:center;border-radius:10px;padding:6px 4px;font:800 18px ui-monospace,monospace;background:rgba(94,234,212,.12);color:var(--gem)}
+.score small{display:block;font:700 9px system-ui;letter-spacing:.08em;color:var(--ink2)}
+.score.hot{background:rgba(250,204,21,.15);color:var(--cit)}.score.fire{background:rgba(244,63,94,.18);color:#fb7185}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:800;margin:4px 4px 0 0;background:rgba(94,234,212,.14);color:#99f6e4}
+.tag.c{background:rgba(250,204,21,.14);color:#fde68a}.tag.r{background:rgba(244,63,94,.16);color:#fda4af}.tag.a{background:rgba(192,132,252,.16);color:#e9d5ff}
+.hunts{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.hunts a{display:inline-flex;align-items:center;min-height:36px;padding:0 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:12px;font-weight:700;background:#132427}
+.hunts a.sold{border-color:rgba(250,204,21,.4);color:#fde68a}
+.save{position:absolute;right:10px;bottom:10px}
+nav{position:fixed;left:8px;right:8px;bottom:8px;display:flex;background:rgba(8,14,15,.94);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+nav button{flex:1;min-height:60px;background:none;border:0;color:#7d9592;font:700 11px system-ui;cursor:pointer}
+nav button span{display:block;font-size:19px}
+nav button.on{color:#fff;background:linear-gradient(180deg,rgba(94,234,212,.2),rgba(192,132,252,.15))}
+.spin{display:inline-block;width:14px;height:14px;border:3px solid #24393d;border-top-color:var(--gem);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes s{to{transform:rotate(360deg)}}
+.banner{background:#3b2f0b;color:#fde68a;padding:8px 12px;font-size:13px}
+.how{font-size:13px;border-left:3px solid var(--cit);padding:6px 10px;background:rgba(250,204,21,.06);border-radius:0 8px 8px 0;margin:8px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px dashed var(--line);padding:7px 4px;text-align:left;vertical-align:top}
+.big{font:800 26px ui-monospace,monospace;color:var(--cit)}
+.x{background:none;border:0;color:var(--ruby);font-size:18px;min-width:44px;min-height:44px;cursor:pointer}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{min-height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink2);padding:0 12px;font:700 12px system-ui;cursor:pointer}.seg button.on{background:rgba(94,234,212,.15);color:var(--gem);border-color:rgba(94,234,212,.4)}
+</style></head><body>
+<div class="banner" id="banner" hidden>Preview mode: live scans may be blocked here. Everything works once it's on GitHub Pages.</div>
+<header><div><h1><b>Rough Cut</b></h1><small>Finds what's about to be worth more, before the market notices</small></div><div class="gemstat" id="hdrStat"></div></header>
+<main>
+
+<!-- FAME -->
+<section id="t-fame">
+ <div class="card"><h2>📈 Fame Radar</h2>
+  <p class="muted">People whose Wikipedia traffic just exploded (a breakout, a viral moment, a call-up, a casting) but whose early stuff hasn't been repriced yet: yearbooks from their school, first records, college programs, rookie cards, early signed items.</p>
+  <div class="how"><b>The play:</b> open "Cheapest now" and compare with "Sold". If listings are priced below recent sales, or nobody has listed the early items yet, buy before collectors catch on.</div>
+  <label for="fDays">Compare yesterday with…</label>
+  <select id="fDays"><option value="7">1 week ago</option><option value="14" selected>2 weeks ago</option><option value="30">1 month ago</option></select>
+  <label class="muted" style="display:flex;gap:8px;align-items:center;min-height:44px"><input type="checkbox" id="fLiving" checked style="width:22px;min-height:22px"> Living people only</label>
+  <div class="row"><button class="btn" id="fGo">Scan for risers</button></div></div>
+ <div id="fOut"></div>
+</section>
+
+<!-- SCREEN -->
+<section id="t-screen" hidden>
+ <div class="card"><h2>🎬 Page-to-Screen</h2>
+  <p class="muted">Books with a film or TV adaptation coming out, or just released. First editions of the source book often jump when the trailer or show lands, and by then it's too late.</p>
+  <div class="how"><b>The play:</b> buy true first printings, especially signed or with a dust jacket, while the release is still months away. Sell into the hype. Check "AbeBooks 1st eds" for supply.</div>
+  <div class="row"><button class="btn" id="sGo">Scan upcoming adaptations</button></div></div>
+ <div id="sOut"></div>
+</section>
+
+<!-- PROSPECTS -->
+<section id="t-pros" hidden>
+ <div class="card"><h2>⚾ Prospect Pulse</h2>
+  <p class="muted">Young minor leaguers (23 and under) putting up big numbers at AA and AAA who haven't debuted in MLB yet. Their 1st Bowman cards are cheapest before the call-up.</p>
+  <div class="how"><b>The play:</b> target their "1st Bowman" base, chrome or refractor cards. Buy in the offseason or early spring; the call-up is usually the sell moment.</div>
+  <label for="pSeason">Season</label><input id="pSeason" inputmode="numeric">
+  <div class="row"><button class="btn" id="pGo">Scan prospects</button></div></div>
+ <div id="pOut"></div>
+</section>
+
+<!-- REFUNDS -->
+<section id="t-ref" hidden>
+ <div class="card"><h2>💸 Refund Gap</h2>
+  <p class="muted">New U.S. product recalls (CPSC) where the maker refunds owners. When used units sell for less than the refund, the gap is the profit.</p>
+  <div class="how"><b>Rules:</b> read the remedy first, because some refunds need a receipt or are limited to original buyers. Never resell a recalled item; claim the refund and dispose of it as instructed. Only count it as a lead if the refund terms allow it.</div>
+  <label for="rDays">Recalls from the last…</label><select id="rDays"><option value="30">30 days</option><option value="90" selected>90 days</option><option value="180">6 months</option></select>
+  <div class="row"><button class="btn" id="rGo">Scan recalls</button></div></div>
+ <div id="rOut"></div>
+</section>
+
+<!-- LEADS -->
+<section id="t-leads" hidden>
+ <div class="card"><h2>💎 My Leads</h2>
+  <div class="grid"><div><div class="muted">Spent</div><div class="big" id="lSpent">$0</div></div><div><div class="muted">Profit (sold)</div><div class="big" id="lProfit">$0</div></div></div>
+  <div class="seg" id="lSeg" style="margin-top:10px"><button data-f="all" class="on">All</button><button data-f="watch">Watching</button><button data-f="bought">Bought</button><button data-f="sold">Sold</button><button data-f="pass">Passed</button></div>
+ </div>
+ <div id="lOut"></div>
+ <div class="row"><button class="btn alt" id="lCsv">Export CSV</button><button class="btn alt" id="lBak">Backup</button><button class="btn alt" id="lRes">Restore</button><input type="file" id="lFile" accept=".json" hidden></div>
+</section>
+</main>
+
+<nav>
+ <button data-t="fame" class="on"><span>📈</span>Fame</button>
+ <button data-t="screen"><span>🎬</span>Screen</button>
+ <button data-t="pros"><span>⚾</span>Prospects</button>
+ <button data-t="ref"><span>💸</span>Refunds</button>
+ <button data-t="leads"><span>💎</span>Leads</button>
+</nav>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+try{if(!/github\.io$/.test(location.hostname))$('#banner').hidden=false}catch(e){}
+async function J(u){const r=await fetch(u);if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+const spin=t=>`<div class="card"><span class="spin"></span>${esc(t)}</div>`;
+const pad=n=>String(n).padStart(2,'0');
+const enc=encodeURIComponent;
+async function pool(items,n,fn){const res=[];let i=0;await Promise.all(Array.from({length:n},async()=>{while(i<items.length){const j=i++;try{res[j]=await fn(items[j])}catch(e){res[j]=null}}}));return res}
+
+/* ---------- tabs ---------- */
+const TABS=['fame','screen','pros','ref','leads'];
+function tab(t){document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!=='t-'+t);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));if(t==='leads')renderLeads();try{history.replaceState(null,'','#'+t)}catch(e){}window.scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+
+/* ---------- hunt links ---------- */
+const ebayNow=q=>`https://www.ebay.com/sch/i.html?_nkw=${enc(q)}&_sop=15`;
+const ebaySold=q=>`https://www.ebay.com/sch/i.html?_nkw=${enc(q)}&LH_Sold=1&LH_Complete=1&_sop=13`;
+const ebayNew=q=>`https://www.ebay.com/sch/i.html?_nkw=${enc(q)}&_sop=10`;
+function hunts(list){return '<div class="hunts">'+list.map(h=>h.sold?`<a class="sold" href="${h.u}" target="_blank" rel="noopener">${esc(h.t)} ↗</a>`:`<a href="${h.u}" target="_blank" rel="noopener">${esc(h.t)} ↗</a>`).join('')+'</div>'}
+function pair(label,q){return[{t:label+': cheapest now',u:ebayNow(q)},{t:label+': sold',u:ebaySold(q),sold:1}]}
+
+/* ---------- leads store ---------- */
+const LEADS=()=>store.get('rc.leads',[]);
+const CARDS={};let cardN=0;
+function leadCard(o){const id='c'+(cardN++);CARDS[id]=o;
+ const cls=o.score>=80?'fire':o.score>=50?'hot':'';
+ return `<div class="lead"><div class="top">${o.img?`<img class="th" src="${esc(o.img)}" alt="" loading="lazy">`:''}<div class="nm"><b class="t">${esc(o.title)}</b><div class="muted">${o.sub||''}</div>${o.tags||''}</div>
+  ${o.score!=null?`<div class="score ${cls}">${o.score}<small>${esc(o.scoreLbl||'SCORE')}</small></div>`:''}</div>
+  ${o.body||''}${hunts(o.hunts||[])}<div style="height:34px"></div><button class="btn sm save" data-save="${id}">＋ Save lead</button></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-save]');if(!b)return;const o=CARDS[b.dataset.save];if(!o)return;
+ const L=LEADS();if(L.some(x=>x.key===o.key)){b.textContent='Already saved';return}
+ L.unshift({key:o.key,mod:o.mod,title:o.title,sub:(o.sub||'').replace(/<[^>]+>/g,''),hunts:o.hunts,status:'watch',cost:'',sold:'',note:'',date:new Date().toISOString().slice(0,10)});
+ store.set('rc.leads',L);b.textContent='Saved ✓';b.disabled=true;hdr()});
+function hdr(){const L=LEADS();const p=L.filter(l=>l.status==='sold').reduce((a,l)=>a+((+l.sold||0)-(+l.cost||0)),0);$('#hdrStat').innerHTML=`${L.length} leads<br>${p>=0?'+':''}$${p.toFixed(0)}`}
+hdr();
+
+/* ---------- WIKIDATA helper ---------- */
+async function sparql(q){const d=await J('https://query.wikidata.org/sparql?format=json&query='+enc(q));return d.results.bindings}
+const v=(b,k)=>b[k]?.value||'';
+
+/* ---------- FAME RADAR ---------- */
+const SKIP=/^(Main_Page|Special:|Wikipedia:|Portal:|File:|Help:|Template:|Category:|Talk:|User:|List_of|Deaths_in|\d{4}_in_|Cleopatra|XXX|Pornhub|Google|YouTube|Facebook|ChatGPT|Instagram|Wikipedia|Bible)/i;
+function ymdParts(d){return[d.getUTCFullYear(),pad(d.getUTCMonth()+1),pad(d.getUTCDate())]}
+async function topDay(d){const[y,m,dd]=ymdParts(d);const r=await J(`https://wikimedia.org/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/${y}/${m}/${dd}`);return r.items[0].articles}
+$('#fGo').onclick=async()=>{const out=$('#fOut');out.innerHTML=spin('Reading Wikipedia traffic…');
+ try{
+  const y=new Date(Date.now()-864e5*1.2);const back=+$('#fDays').value;const b=new Date(y.getTime()-back*864e5);
+  const [now,then,mid]=await Promise.all([topDay(y),topDay(b),topDay(new Date(y.getTime()-864e5))]);
+  const thenMap=Object.fromEntries(then.map(a=>[a.article,a.views]));const floor=Math.min(...then.map(a=>a.views));
+  const midMap=Object.fromEntries(mid.map(a=>[a.article,a.views]));
+  let cands=now.filter(a=>!SKIP.test(a.article)).map(a=>{const before=thenMap[a.article]||floor*0.6;return{art:a.article,views:a.views,before,ratio:a.views/before,isNew:!thenMap[a.article],twoDay:!!midMap[a.article]}})
+   .filter(a=>a.ratio>=3).sort((a,b)=>b.ratio-a.ratio).slice(0,180);
+  out.innerHTML=spin(`Checking who's a real person among ${cands.length} risers…`);
+  const people=[];
+  for(let i=0;i<cands.length;i+=60){const chunk=cands.slice(i,i+60);
+   const vals=chunk.map(c=>`<https://en.wikipedia.org/wiki/${encodeURI(c.art).replace(/[()'!*,]/g,ch=>'%'+ch.charCodeAt(0).toString(16).toUpperCase())}>`).join(' ');
+   const q=`SELECT ?a ?p ?pLabel ?pDescription ?birth ?death ?img ?links (GROUP_CONCAT(DISTINCT ?occL;separator="|") AS ?occs) (GROUP_CONCAT(DISTINCT ?schL;separator="|") AS ?schools) WHERE {
+    VALUES ?a { ${vals} } ?a schema:about ?p. ?p wdt:P31 wd:Q5.
+    OPTIONAL{?p wikibase:sitelinks ?links} OPTIONAL{?p wdt:P569 ?birth} OPTIONAL{?p wdt:P570 ?death} OPTIONAL{?p wdt:P18 ?img}
+    OPTIONAL{?p wdt:P106 ?occ. ?occ rdfs:label ?occL FILTER(lang(?occL)='en')}
+    OPTIONAL{?p wdt:P69 ?sch. ?sch rdfs:label ?schL FILTER(lang(?schL)='en')}
+    SERVICE wikibase:label{bd:serviceParam wikibase:language "en".} } GROUP BY ?a ?p ?pLabel ?pDescription ?birth ?death ?img ?links`;
+   try{for(const r of await sparql(q)){const art=decodeURIComponent(v(r,'a').split('/wiki/')[1]||'');const c=chunk.find(x=>x.art===art)||chunk.find(x=>decodeURIComponent(x.art)===art);if(!c)continue;
+    if(people.some(p=>p.art===c.art))continue;
+    people.push({...c,links:+v(r,'links')||0,name:decodeURIComponent(c.art).replace(/_/g,' ').replace(/\s*\(.*\)$/,''),desc:v(r,'pDescription'),birth:v(r,'birth').slice(0,4),death:v(r,'death'),img:v(r,'img'),occs:v(r,'occs').split('|').filter(Boolean),schools:v(r,'schools').split('|').filter(Boolean)})}}catch(e){}
+  }
+  const fm=p=>p.links>80?0.25:p.links>45?0.5:p.links>20?0.8:1.15;
+  const list=people.filter(p=>!$('#fLiving').checked||!p.death).sort((a,b)=>Math.min(b.ratio,40)*fm(b)-Math.min(a.ratio,40)*fm(a)).slice(0,40);
+  if(!list.length){out.innerHTML='<div class="card">No person risers found right now. Try a longer comparison window.</div>';return}
+  out.innerHTML=`<div class="card muted">${list.length} people whose traffic jumped ${back} days → yesterday. Score = traffic jump, discounted for people who were already world-famous. The best diamonds are "barely known before".</div>`+list.map(p=>{
+   const occ=p.occs.join(' ').toLowerCase();const age=p.birth?new Date().getFullYear()-p.birth:'';
+   const ath=/player|athlete|footballer|baseball|basketball|hockey|boxer|wrestler|racing|golfer|tennis|swimmer|fighter|quarterback/.test(occ);
+   const mus=/singer|rapper|musician|songwriter|guitarist|drummer|composer|dj/.test(occ);
+   const act=/actor|actress|comedian|television|presenter|model|influencer|youtuber|streamer/.test(occ);
+   const aut=/writer|author|novelist|poet|journalist/.test(occ);
+   const pol=/politician|lawyer|judge|businessperson|entrepreneur|executive/.test(occ);
+   const H=[];
+   const hs=p.schools.filter(s=>/high school|academy|preparatory|prep\b/i.test(s));const col=p.schools.filter(s=>/university|college/i.test(s));
+   if(p.birth&&(hs.length||!p.schools.length))H.push(...pair('Yearbook',`${hs[0]||''} yearbook ${+p.birth+17} ${+p.birth+18}`.trim()));
+   if(hs[0])H.push({t:`"${p.name}" + school`,u:ebayNow(`${p.name} ${hs[0]}`)});
+   if(col[0])H.push({t:`${col[0].split(' ').slice(0,4).join(' ')} items`,u:ebayNow(`${p.name} ${col[0]}`)});
+   if(ath)H.push(...pair('Rookie / 1st cards',`${p.name} rookie card`),{t:'Signed',u:ebayNow(`${p.name} signed autograph`)});
+   if(mus)H.push(...pair('Early records',`${p.name} vinyl first press`),{t:'Signed',u:ebayNow(`${p.name} signed`)});
+   if(act)H.push(...pair('Signed photos',`${p.name} signed photo`),{t:'Early/rare',u:ebayNow(`${p.name} rare early`)});
+   if(aut)H.push(...pair('Signed 1st editions',`${p.name} signed first edition`));
+   if(pol)H.push(...pair('Signed / campaign',`${p.name} signed`));
+   if(!ath&&!mus&&!act&&!aut&&!pol)H.push(...pair('Signed',`${p.name} signed`));
+   H.push({t:'Newly listed',u:ebayNew(p.name)});
+   const fameMult=p.links>80?0.25:p.links>45?0.5:p.links>20?0.8:1.15;const score=Math.max(3,Math.min(99,Math.round(Math.min(p.ratio,40)*3*fameMult)));p.score=score;
+   return leadCard({key:'fame:'+p.art,mod:'Fame',title:p.name,sub:`${esc(p.desc)}${age&&!p.death?` · age ${age}`:''}`,img:p.img?p.img.replace('http://','https://')+'?width=160':'',
+    score,scoreLbl:'× '+p.ratio.toFixed(0),
+    tags:`<span class="tag c">${p.views.toLocaleString()} views yesterday</span>${p.links<=20?'<span class="tag r">barely known before</span>':p.links>80?'<span class="tag">already world-famous</span>':''}${p.isNew?'<span class="tag c">new to top 1000</span>':''}${p.twoDay?'<span class="tag a">2+ days hot</span>':''}${p.schools.slice(0,2).map(s=>`<span class="tag">${esc(s)}</span>`).join('')}`,
+    hunts:H})}).join('');
+ }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}). Try again in a minute.</div>`}};
+
+/* ---------- PAGE TO SCREEN ---------- */
+$('#sGo').onclick=async()=>{const out=$('#sOut');out.innerHTML=spin('Searching upcoming film & TV adaptations…');
+ const t=new Date();const from=new Date(t.getTime()-60*864e5).toISOString().slice(0,10),to=new Date(t.getTime()+540*864e5).toISOString().slice(0,10);
+ const q=`SELECT ?w ?wLabel ?date ?typeLabel ?b ?bLabel ?bDesc (SAMPLE(?aL) AS ?author) (MIN(?pub) AS ?bpub) (SAMPLE(?img) AS ?pic) WHERE {
+  VALUES ?type { wd:Q11424 wd:Q5398426 wd:Q1259759 wd:Q24856 wd:Q202866 }
+  ?w wdt:P31 ?type; wdt:P144 ?b; wdt:P577 ?date.
+  FILTER(?date >= "${from}T00:00:00Z"^^xsd:dateTime && ?date <= "${to}T00:00:00Z"^^xsd:dateTime)
+  ?b wdt:P31 ?bt. VALUES ?bt { wd:Q7725634 wd:Q8261 wd:Q47461344 wd:Q571 wd:Q1667921 wd:Q49084 wd:Q725377 wd:Q14406742 wd:Q1004 wd:Q21198342 }
+  OPTIONAL{?b wdt:P50 ?a. ?a rdfs:label ?aL FILTER(lang(?aL)='en')} OPTIONAL{?b wdt:P577 ?pub} OPTIONAL{?w wdt:P18 ?img}
+  OPTIONAL{?b schema:description ?bDesc FILTER(lang(?bDesc)='en')}
+  SERVICE wikibase:label{bd:serviceParam wikibase:language "en".} } GROUP BY ?w ?wLabel ?date ?typeLabel ?b ?bLabel ?bDesc LIMIT 300`;
+ try{const rows=await sparql(q);const seen=new Set();const items=[];
+  for(const r of rows){const k=v(r,'b');if(seen.has(k)||/^Q\d+$/.test(v(r,'bLabel')))continue;seen.add(k);if(/^Q\d+$/.test(v(r,'wLabel')))r.wLabel={value:'untitled adaptation'};
+   const rel=new Date(v(r,'date'));const days=Math.round((rel-t)/864e5);const pubY=v(r,'bpub').slice(0,4);
+   const age=pubY?t.getFullYear()-+pubY:null;
+   // score: sweet spot is 2-9 months before release; older books = scarcer first printings
+   let s=days<0?35:days<60?60:days<270?90:days<400?70:50;if(age!=null)s+=age>=20?10:age>=8?5:age<=2?-15:0;s=Math.max(5,Math.min(99,s));
+   items.push({r,days,pubY,score:s})}
+  items.sort((a,b)=>b.score-a.score||a.days-b.days);
+  if(!items.length){out.innerHTML='<div class="card">No adaptations found in the window.</div>';return}
+  out.innerHTML=`<div class="card muted">${items.length} source books. Score favors releases 2–9 months out and older books, where true first printings are scarcer. Release dates come from Wikidata and can shift.</div>`+items.map(({r,days,pubY,score})=>{
+   const book=v(r,'bLabel'),au=v(r,'author');const qb=`${book} ${au}`.trim();
+   const when=days<0?`released ${-days} days ago`:`releases in ${days} days`;
+   return leadCard({key:'screen:'+v(r,'b'),mod:'Screen',title:book,sub:`${esc(au?'by '+au:'')}${pubY?' · first published '+pubY:''}<br>→ ${esc(v(r,'typeLabel'))}: <b>${esc(v(r,'wLabel'))}</b> · ${v(r,'date').slice(0,10)}`,
+    img:v(r,'pic')?v(r,'pic').replace('http://','https://')+'?width=160':'',score,scoreLbl:days<0?'OUT':days+'D',
+    tags:`<span class="tag ${days<0?'r':days<270?'c':''}">${esc(when)}</span>${pubY&&t.getFullYear()-pubY>=20?'<span class="tag a">older book: scarce 1sts</span>':''}`,
+    hunts:[...pair('1st edition',`${qb} first edition`),{t:'Signed',u:ebayNow(`${qb} signed`)},{t:'AbeBooks 1st eds',u:`https://www.abebooks.com/servlet/SearchResults?tn=${enc(book)}&an=${enc(au)}&fe=on&sortby=1`},{t:'Newly listed',u:ebayNew(`${qb} first edition`)}]})}).join('');
+ }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}). Wikidata may be busy; try again in a minute.</div>`}};
+
+/* ---------- PROSPECTS ---------- */
+const nowY=new Date().getFullYear(),nowM=new Date().getMonth()+1;$('#pSeason').value=nowM<4?nowY-1:nowY;
+$('#pGo').onclick=async()=>{const out=$('#pOut');out.innerHTML=spin('Pulling AA & AAA stats…');const yr=+$('#pSeason').value||nowY;
+ try{const base=`https://statsapi.mlb.com/api/v1/stats?stats=season&season=${yr}&sportIds=11,12&playerPool=All&limit=600`;
+  const [hit,pit]=await Promise.all([J(base+'&group=hitting&sortStat=onBasePlusSlugging&order=desc'),J(base+'&group=pitching&sortStat=strikeoutsPer9Inn&order=desc')]);
+  const H=(hit.stats?.[0]?.splits||[]).filter(s=>s.stat.age<=23&&s.stat.plateAppearances>=150&&+s.stat.ops>=.820).map(s=>({s,kind:'bat',val:+s.stat.ops}));
+  const P=(pit.stats?.[0]?.splits||[]).filter(s=>s.stat.age<=23&&parseFloat(s.stat.inningsPitched)>=50&&+s.stat.strikeoutsPer9Inn>=9.5&&+s.stat.era<=3.6).map(s=>({s,kind:'arm',val:+s.stat.strikeoutsPer9Inn}));
+  let all=[...H,...P];const byId={};for(const x of all){const id=x.s.player.id;if(!byId[id]||x.s.sport?.id===11)byId[id]=x}all=Object.values(byId);
+  out.innerHTML=spin(`Checking which of ${all.length} haven't debuted yet…`);
+  const ids=all.map(x=>x.s.player.id);const ppl={};
+  for(let i=0;i<ids.length;i+=80){try{const d=await J('https://statsapi.mlb.com/api/v1/people?personIds='+ids.slice(i,i+80).join(','));for(const p of d.people||[])ppl[p.id]=p}catch(e){}}
+  const list=all.filter(x=>!ppl[x.s.player.id]?.mlbDebutDate).map(x=>{const st=x.s.stat;const age=st.age;
+   const lvl=x.s.sport?.id===11?'AAA':'AA';
+   let score=x.kind==='bat'?Math.round((+st.ops-.75)*220):Math.round((+st.strikeoutsPer9Inn-8)*14+(3.6-+st.era)*12);
+   score+= (23-age)*6 + (lvl==='AAA'?8:0);score=Math.max(5,Math.min(99,score));return{...x,age,lvl,score}}).sort((a,b)=>b.score-a.score).slice(0,40);
+  if(!list.length){out.innerHTML='<div class="card">No qualifying prospects found for that season.</div>';return}
+  out.innerHTML=`<div class="card muted">${list.length} prospects, 23 and under, at AA/AAA in ${yr}, with no MLB debut yet. Score blends performance, youth and level.</div>`+list.map(x=>{
+   const st=x.s.stat,n=x.s.player.fullName,p=ppl[x.s.player.id]||{};
+   const line=x.kind==='bat'?`${st.avg}/${st.obp}/${st.slg} · ${st.homeRuns} HR · ${st.stolenBases} SB · ${st.plateAppearances} PA`:`${st.era} ERA · ${st.strikeoutsPer9Inn} K/9 · ${st.inningsPitched} IP · WHIP ${st.whip}`;
+   return leadCard({key:'pros:'+x.s.player.id,mod:'Prospect',title:n,sub:`${esc(p.primaryPosition?.abbreviation||'')} · ${esc(x.s.team?.name||'')} (${x.lvl}) · age ${x.age}<br><span style="font-family:ui-monospace,monospace">${esc(line)}</span>`,
+    img:`https://img.mlbstatic.com/mlb-photos/image/upload/w_120,q_auto:best/v1/people/${x.s.player.id}/headshot/milb/current`,score:x.score,scoreLbl:x.lvl,
+    tags:`<span class="tag ${x.age<=21?'c':''}">age ${x.age}</span><span class="tag a">no MLB debut</span>`,
+    hunts:[...pair('1st Bowman',`${n} 1st Bowman`),{t:'1st Bowman Chrome auto',u:ebaySold(`${n} 1st Bowman Chrome auto`),sold:1},{t:'Refractors',u:ebayNow(`${n} 1st Bowman refractor`)},{t:'Newly listed',u:ebayNew(`${n} Bowman`)}]})}).join('');
+ }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
+
+/* ---------- REFUND GAP ---------- */
+$('#rGo').onclick=async()=>{const out=$('#rOut');out.innerHTML=spin('Reading CPSC recalls…');
+ const start=new Date(Date.now()-(+$('#rDays').value)*864e5).toISOString().slice(0,10);
+ try{const d=await J('https://www.saferproducts.gov/RestWebServices/Recall?format=json&RecallDateStart='+start);
+  const items=d.filter(r=>(r.Remedies||[]).some(m=>/refund/i.test(m.Name))).map(r=>{
+   const rem=(r.Remedies||[]).map(m=>m.Name).join(' ');const sold=(r.Retailers||[]).map(x=>x.Name).join(' ');
+   const prices=(sold.match(/\$\s?[\d,]+(?:\.\d+)?/g)||[]).map(x=>+x.replace(/[$,\s]/g,'')).filter(Boolean);
+   const hi=prices.length?Math.max(...prices):0,lo=prices.length?Math.min(...prices):0;
+   const units=((r.Products?.[0]?.NumberOfUnits||'').match(/[\d,]+/)||['0'])[0].replace(/,/g,'');
+   const needsReceipt=/receipt|proof of purchase/i.test(rem);const full=/full refund/i.test(rem);const prorated=/pro-?rated|partial/i.test(rem);
+   const resale=/amazon|walmart|target|ebay|wayfair|temu|shein|costco|home depot|lowe/i.test(sold);
+   let score=Math.round(Math.min(40,hi/5)+Math.min(25,Math.log10((+units)||1)*5)+(full?15:0)-(needsReceipt?25:0)-(prorated?15:0)+(resale?10:0)+15);score=Math.max(3,Math.min(99,score));
+   return{r,rem,sold,hi,lo,units:+units,needsReceipt,full,prorated,score}}).sort((a,b)=>b.score-a.score);
+  if(!items.length){out.innerHTML='<div class="card">No refund recalls in this window.</div>';return}
+  out.innerHTML=`<div class="card muted">${items.length} recalls offering refunds. Score favors pricier items, more units in circulation, full refunds, and no receipt needed.</div>`+items.map(x=>{
+   const r=x.r,name=r.Products?.[0]?.Name||r.Title;
+   return leadCard({key:'ref:'+r.RecallID,mod:'Refund',title:name,sub:`Recalled ${r.RecallDate.slice(0,10)} · ${x.units?x.units.toLocaleString()+' units':''}${x.hi?` · sold for ${x.lo!==x.hi?'$'+x.lo+'–':''}$${x.hi}`:''}`,
+    img:r.Images?.[0]?.URL||'',score:x.score,scoreLbl:x.needsReceipt?'RECEIPT':'GAP',
+    tags:`${x.full?'<span class="tag c">full refund</span>':''}${x.needsReceipt?'<span class="tag r">needs receipt</span>':'<span class="tag">no receipt mentioned</span>'}${x.prorated?'<span class="tag r">prorated</span>':''}`,
+    body:`<details style="margin-top:8px"><summary class="muted" style="cursor:pointer;min-height:32px">Remedy terms & where it was sold</summary><p class="muted">${esc(x.rem)}</p><p class="muted">${esc(x.sold)}</p></details>`,
+    hunts:[{t:'Used on eBay',u:ebayNow(name)},{t:'FB Marketplace',u:`https://www.facebook.com/marketplace/search/?query=${enc(name)}`},{t:'Craigslist (CT)',u:`https://hartford.craigslist.org/search/sss?query=${enc(name)}`},{t:'Recall notice',u:r.URL}]})}).join('');
+ }catch(e){out.innerHTML=`<div class="card">Scan failed (${esc(e.message)}).</div>`}};
+
+/* ---------- LEADS ---------- */
+let lf='all';
+document.querySelectorAll('#lSeg button').forEach(b=>b.onclick=()=>{lf=b.dataset.f;document.querySelectorAll('#lSeg button').forEach(x=>x.classList.toggle('on',x===b));renderLeads()});
+function renderLeads(){const L=LEADS();
+ const spent=L.filter(l=>l.status==='bought'||l.status==='sold').reduce((a,l)=>a+(+l.cost||0),0);
+ const prof=L.filter(l=>l.status==='sold').reduce((a,l)=>a+((+l.sold||0)-(+l.cost||0)),0);
+ $('#lSpent').textContent='$'+spent.toFixed(0);$('#lProfit').textContent=(prof>=0?'+$':'-$')+Math.abs(prof).toFixed(0);$('#lProfit').style.color=prof>=0?'var(--gem)':'var(--ruby)';
+ const show=L.map((l,i)=>({l,i})).filter(x=>lf==='all'||x.l.status===lf);
+ $('#lOut').innerHTML=show.length?show.map(({l,i})=>`<div class="lead"><div class="top"><div class="nm"><span class="tag a">${esc(l.mod)}</span> <b class="t">${esc(l.title)}</b><div class="muted">${esc(l.sub)}</div><div class="muted">saved ${esc(l.date)}</div></div><button class="x" data-del="${i}" aria-label="Delete">×</button></div>
+  <div class="grid"><div><label>Status</label><select data-i="${i}" data-k="status">${['watch','bought','sold','pass'].map(s=>`<option value="${s}"${l.status===s?' selected':''}>${{watch:'Watching',bought:'Bought',sold:'Sold',pass:'Passed'}[s]}</option>`).join('')}</select></div>
+  <div><label>Paid $</label><input data-i="${i}" data-k="cost" inputmode="decimal" value="${esc(l.cost)}"></div></div>
+  <div class="grid"><div><label>Sold for $ (after fees)</label><input data-i="${i}" data-k="sold" inputmode="decimal" value="${esc(l.sold)}"></div><div><label>Note</label><input data-i="${i}" data-k="note" value="${esc(l.note)}"></div></div>
+  ${hunts(l.hunts||[])}</div>`).join(''):'<div class="card muted">No leads here yet. Tap "＋ Save lead" on anything worth watching.</div>';
+ document.querySelectorAll('#lOut [data-k]').forEach(el=>el.onchange=()=>{const L=LEADS();L[+el.dataset.i][el.dataset.k]=el.value;store.set('rc.leads',L);renderLeads();hdr()});
+ document.querySelectorAll('#lOut [data-del]').forEach(b=>b.onclick=()=>{if(!confirm('Delete this lead?'))return;const L=LEADS();L.splice(+b.dataset.del,1);store.set('rc.leads',L);renderLeads();hdr()});
+}
+function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+$('#lCsv').onclick=()=>{const c=['date','mod','title','status','cost','sold','note'];dl('rough-cut-leads.csv',[c.join(',')].concat(LEADS().map(l=>c.map(k=>'"'+String(l[k]??'').replace(/"/g,'""')+'"').join(','))).join('\n'),'text/csv')};
+$('#lBak').onclick=()=>dl('rough-cut-backup.json',JSON.stringify(LEADS()),'application/json');
+$('#lRes').onclick=()=>$('#lFile').click();
+$('#lFile').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());if(Array.isArray(d)){store.set('rc.leads',d);renderLeads();hdr()}}catch(err){alert('Not a valid backup file')}};
+
+try{const h=location.hash.slice(1);if(TABS.includes(h))tab(h)}catch(e){}
+</script>
+</body></html>
